@@ -19,15 +19,20 @@ struct ImageGridView: View {
         }
         VStack {
             Slider(value: $numImages, in: 1...7, step: 1.0)
-            LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 4)) {
-                ForEach(imageNames, id: \.self) { name in
-                    Image(name)
-                        .resizable()
-                        .aspectRatio(1,contentMode: .fill)
-                        .border(Color.black)
+            GeometryReader { geometry in
+                let minCellWidth: CGFloat = geometry.size.width / 4
+                let maxCellWidth: CGFloat = geometry.size.width / CGFloat(imageNames.count)
+                let optimalCellWidth = max(minCellWidth, maxCellWidth)
+                let numberOfColumns = Int(geometry.size.width / optimalCellWidth)
+                LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: numberOfColumns)) {
+                    ForEach(imageNames, id: \.self) { name in
+                        Image(name)
+                            .resizable()
+                            .aspectRatio(1,contentMode: .fill)
+                            .border(Color.black)
+                    }
                 }
             }
-            Spacer()
         }
         .padding()
     }
